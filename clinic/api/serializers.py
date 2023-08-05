@@ -42,7 +42,7 @@ class ExercisePatientCreateSerializer(serializers.ModelSerializer):
         queryset=Patient.objects.all()
     )
     exercise = serializers.PrimaryKeyRelatedField(
-        queryset=Exercise.objects.all()
+        queryset=Exercise.objects.prefetch_related("doctors").all()
     )
 
     class Meta:
@@ -51,3 +51,43 @@ class ExercisePatientCreateSerializer(serializers.ModelSerializer):
             "patient",
             "exercise",
         )
+
+    def validate(self, data):
+        view = self.context.get("view")
+        doctor = view.kwargs.get("doctor_id")
+        patient = data["patient"]
+        exercise = data["exercise"]
+        if not exercise.doctors.filter(id=doctor).exists():
+            message = (
+                "Вы не можете назначить это упражнение. Будьте внимательны."
+            )
+            raise serializers.ValidationError({"error": message})
+        elif ExercisePatient.objects.filter(
+            exercise=exercise, patient=patient
+        ).exists():
+            message = (
+                "Пациенту уже назначено это упражнение. Будьте внимательны."
+            )
+            raise serializers.ValidationError({"error": message})
+        return data
+
+    def to_representation(self, instance):
+        return ExerciseDoctorSerializer(instance).data
+
+
+class ExerciseDoctorSerializer(serializers.ModelSerializer):
+    patient = PatientSerializer()
+    exercise = ExerciseSerializer()
+
+    class Meta:
+        model = ExercisePatient
+        fields = "__all__"
+
+
+class ExercisePatientListSerializer(serializers.ModelSerializer):
+    patient = PatientSerializer(read_only=True)
+    exercise = ExerciseSerializer(read_only=True)
+
+    class Meta:
+        model = ExercisePatient
+        fields = "__all__"

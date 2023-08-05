@@ -84,8 +84,12 @@ WSGI_APPLICATION = "clinic.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": os.environ["DB_ENGINE"],
+        "NAME": os.environ["DB_NAME"],
+        "USER": os.environ["POSTGRES_USER"],
+        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+        # "HOST": os.environ["DB_HOST"],
+        # "PORT": os.environ["DB_PORT"],
     }
 }
 

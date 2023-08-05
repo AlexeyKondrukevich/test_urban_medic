@@ -6,6 +6,7 @@ from .views import (
     ExerciseViewSet,
     PatientViewSet,
     DoctorExerciseViewSet,
+    PatientExerciseViewSet,
 )
 
 router = routers.DefaultRouter()
@@ -15,7 +16,12 @@ router.register(r"exercises", ExerciseViewSet, basename="exercises")
 router.register(
     r"doctors/(?P<doctor_id>\d+)/exercises",
     DoctorExerciseViewSet,
-    basename="reviews",
+    basename="doctors_exercises",
+)
+router.register(
+    r"patients/(?P<patient_id>\d+)/exercises-list",
+    PatientExerciseViewSet,
+    basename="patients_exercises_list",
 )
 
 urlpatterns = [

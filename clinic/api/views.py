@@ -1,12 +1,14 @@
 from exercises.models import Doctor, Exercise, Patient, ExercisePatient
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from django.shortcuts import get_object_or_404
+from django.db.models import Prefetch
 
 from .serializers import (
     DoctorSerializer,
     ExerciseSerializer,
     PatientSerializer,
     ExercisePatientCreateSerializer,
+    ExercisePatientListSerializer,
 )
 
 
@@ -21,12 +23,14 @@ class PatientViewSet(viewsets.ModelViewSet):
 
 
 class ExerciseViewSet(viewsets.ModelViewSet):
-    queryset = Exercise.objects.all()
+    queryset = Exercise.objects.prefetch_related("doctors").all()
     serializer_class = ExerciseSerializer
 
 
 class DoctorExerciseViewSet(viewsets.ModelViewSet):
-    queryset = ExercisePatient.objects.all()
+    queryset = ExercisePatient.objects.select_related(
+        "patient", "exercise", "doctor"
+    ).all()
     serializer_class = ExercisePatientCreateSerializer
 
     def get_queryset(self):
@@ -38,3 +42,15 @@ class DoctorExerciseViewSet(viewsets.ModelViewSet):
         doctor_id = self.kwargs.get("doctor_id")
         doctor = get_object_or_404(Doctor, id=doctor_id)
         serializer.save(doctor=doctor)
+
+
+class PatientExerciseViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = ExercisePatient.objects.select_related(
+        "patient", "exercise", "doctor"
+    ).all()
+    serializer_class = ExercisePatientListSerializer
+
+    def get_queryset(self):
+        patient_id = self.kwargs.get("patient_id")
+        patient = get_object_or_404(Patient, id=patient_id)
+        return ExercisePatient.objects.filter(patient=patient)
