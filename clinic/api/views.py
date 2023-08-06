@@ -1,14 +1,10 @@
-from exercises.models import Doctor, Exercise, Patient, ExercisePatient
-from rest_framework import viewsets, mixins
 from django.shortcuts import get_object_or_404
+from exercises.models import Doctor, Exercise, ExercisePatient, Patient
+from rest_framework import mixins, viewsets
 
-from .serializers import (
-    DoctorSerializer,
-    ExerciseSerializer,
-    PatientSerializer,
-    ExercisePatientCreateSerializer,
-    ExercisePatientListSerializer,
-)
+from .serializers import (DoctorSerializer, ExercisePatientCreateSerializer,
+                          ExercisePatientListSerializer, ExerciseSerializer,
+                          PatientSerializer)
 
 
 class DoctorViewSet(viewsets.ModelViewSet):

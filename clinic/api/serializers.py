@@ -1,5 +1,6 @@
-from exercises.models import Doctor, Patient, Exercise, ExercisePatient
 from rest_framework import serializers
+
+from exercises.models import Doctor, Exercise, ExercisePatient, Patient
 
 
 class DoctorSerializer(serializers.ModelSerializer):
