@@ -27,10 +27,10 @@ urlpatterns = [
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Library API",
+        title="Clinic API",
         default_version="v1",
-        description="Документация для приложения Library",
-        contact=openapi.Contact(email="admin@library.ru"),
+        description="Документация для приложения Clinic",
+        contact=openapi.Contact(email="admin@Clinic.ru"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
